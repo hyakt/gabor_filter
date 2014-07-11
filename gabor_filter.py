@@ -7,17 +7,11 @@ import PIL.Image as Image
 
 class GaborFilter(object):
 
-    def __init__(self, wavelength, theta, gamma=2, a=0.5, constrain=False):
-
-        print("create instance")
+    def __init__(self, wavelength, theta, gamma=2, a=0.5):
 
         # Compute appropriate pixel dimensions for longest axis
         eta = -0.5 / (a * wavelength) ** 2
-        if(constrain):
-            size = wavelength
-        else:
-            size = 1 + 2 * \
-                int(ceil(sqrt(log(0.05) * max(1, gamma ** 2) / eta)))
+        size = 1 + 2 * int(ceil(sqrt(log(0.05) * max(1, gamma ** 2) / eta)))
 
         # Initialize mask dimensions
         self.mask = np.zeros((size, size), 'float32')
@@ -37,16 +31,17 @@ class GaborFilter(object):
         self.mask /= sqrt((self.mask * self.mask).sum())
 
     def convolve(self, image):
+        print("convert image")
         return abs(convolve2d(image, self.mask, mode='same'))
 
     def show(self):
+        print("wave show call")
         #        toimage(self.mask).show()
         toimage(self.mask).save("./wave.png")
-        print("wave show call")
 
 
 if __name__ == '__main__':
-    gf = GaborFilter(10, 0)
+    gf = GaborFilter(5, 180)
 
     pic = Image.open("./srcimg50.png")
     pix = np.asarray(pic)
@@ -55,6 +50,5 @@ if __name__ == '__main__':
     convimg = Image.fromarray(convarr)
     convimg.convert('RGB').save('convimg.png')
 
-    print(convimg)
     gf.show()
     print("end")
